@@ -1,0 +1,8 @@
+[2025-08-19 16:57:59.697817] Error en registro #1
+   Registro: (173, "'Butter Unsalted X (40 X 250Gm")
+   Error: (1146, "Table 'copy.products' doesn't exist")
+
+[2025-08-19 16:58:52.706661] Error en registro #1
+   Registro: (173, "'Butter Unsalted X (40 X 250Gm")
+   Error: (1136, "Column count doesn't match value count at row 1")
+
