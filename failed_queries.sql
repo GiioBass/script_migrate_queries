@@ -1,2 +1,0 @@
-INSERT INTO products (id,name_wh,code,units,fluids,weight,is_parent,short_flag,state,is_BOM,type_id,master_product_id,is_hidden_purchase,units_of_sale_id,type_detail_id,location_warehouse_id,product_note,show_in_sales,is_preloaded) VALUES (173, "'Butter Unsalted X (40 X 250Gm");
-INSERT INTO products_suppliers (id,name_wh,code,units,fluids,weight,is_parent,short_flag,state,is_BOM,type_id,master_product_id,is_hidden_purchase,units_of_sale_id,type_detail_id,location_warehouse_id,product_note,show_in_sales,is_preloaded) VALUES (173, "'Butter Unsalted X (40 X 250Gm");

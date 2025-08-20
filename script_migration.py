@@ -15,6 +15,34 @@ TABLE_NAME = "products_suppliers"
 # Archivo de log
 ERROR_LOG = "errores.txt"
 
+def extract_rows(block: str):
+    """Extrae registros ( ... ) respetando paréntesis dentro de strings"""
+    rows = []
+    current = []
+    paren_count = 0
+    in_string = False
+
+    for ch in block:
+        if ch == "'" and (not current or current[-1] != "\\"):  
+            # toggle estado de string
+            in_string = not in_string
+
+        if not in_string:
+            if ch == "(":
+                if paren_count == 0:
+                    current = []
+                paren_count += 1
+            elif ch == ")":
+                paren_count -= 1
+                if paren_count == 0:
+                    current.append(ch)
+                    rows.append("".join(current)[1:-1])  # quita paréntesis externos
+                    continue
+
+        if paren_count > 0:
+            current.append(ch)
+
+    return rows
 
 def parse_sql_file(file_path):
     """Parse the SQL-like file and extract tuples of data"""
@@ -27,7 +55,7 @@ def parse_sql_file(file_path):
     records = []
     for block in blocks:
         # Buscar todas las ocurrencias de "( ... )"
-        matches = re.findall(r"\((.*?)\)", block, re.DOTALL)
+        matches = extract_rows(block)
         for match in matches:
             values = parse_values(match)
             records.append(values)
