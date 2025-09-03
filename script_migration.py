@@ -1,6 +1,7 @@
+from tracemalloc import start
 import pymysql
 import re
-from datetime import datetime
+from datetime import date, datetime
 
 # Configuración de la BD
 DB_CONFIG = {
@@ -11,7 +12,7 @@ DB_CONFIG = {
 }
 
 # Nombre de la tabla destino
-TABLE_NAME = "products_suppliers"
+TABLE_NAME = "polog_wholesalers"
 # Archivo de log
 ERROR_LOG = "errores.txt"
 
@@ -95,11 +96,12 @@ def insert_records(records):
     """Insert records one by one and log errors"""
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
+    skipIndex = []  # 👉 ejemplo: omitir siempre el valor en la posición 5 (0-based)
 
     # Ajusta la cantidad de placeholders según tus columnas reales
     # Escribe aquí las columnas en el mismo orden que vienen en el archivo
     COLUMNS = [
-        "id","name_wh","code","units","fluids","weight","is_parent","short_flag","state","is_BOM","type_id","master_product_id","is_hidden_purchase","units_of_sale_id","type_detail_id","location_warehouse_id","product_note","show_in_sales","is_preloaded"
+        "id", "ordered", "note", "cost_unit", "conversion_unit_id", "units", "fluid", "weight", "created_at", "updated_at", "purchase_order_id", "products_supplier_id", "emailed", "status_polog_id", "user_reception_id", "quantity_packing", "evidence_image", "final_cost", "tax", "evidence_note", "master_product_id", "conversion_fact_id", "date_reception"
     ]
 
     placeholders = ", ".join(["%s"] * len(COLUMNS))
@@ -110,6 +112,7 @@ def insert_records(records):
 
     for i, record in enumerate(records, start=1):
         print(f"Registro {i} → {len(record)} valores")
+        record = tuple(v for j, v in enumerate(record) if j not in skipIndex)
         try:
             cursor.execute(query, record)
             conn.commit()
@@ -117,6 +120,7 @@ def insert_records(records):
         except pymysql.err.IntegrityError as e:
             if e.args[0] == 1062:  # Duplicate entry
                 print(f"⚠️ Registro duplicado ignorado #{i}: {record[0]}")
+                print(f"   → {e}")
                 duplicates += 1
                 conn.rollback()
                 continue
@@ -151,7 +155,7 @@ def insert_records(records):
 
 
 if __name__ == "__main__":
-    file_path = "queries.sql"  # Cambia por la ruta real
+    file_path = "values_clean.sql"  # Cambia por la ruta real
     records = parse_sql_file(file_path)
 
     print(f"Se encontraron {len(records)} registros.")
